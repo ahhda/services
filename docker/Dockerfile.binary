@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y git libssl-dev pkg-config
 
 # Copy and Build Code
 COPY . .
-RUN CARGO_PROFILE_RELEASE_DEBUG=1 cargo build --release
+RUN CARGO_PROFILE_RELEASE_DEBUG=1 --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/root/target cargo build --release
 
 # Extract Binary
 FROM docker.io/debian:bullseye-slim
