@@ -1,16 +1,15 @@
 # syntax=docker/dockerfile:1.4
-FROM docker.io/rust:1-slim-bullseye as cargo-build
+FROM rust:1.61.0 as cargo-build
 WORKDIR /src/
 
 # Copy and Build Code
 COPY . .
-RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/root/target CARGO_PROFILE_RELEASE_DEBUG=1 cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/target cargo build --release
 
 # Extract Binary
 FROM docker.io/debian:bullseye-slim
 
 # Handle signal handlers properly
-RUN apt-get update && apt-get install -y ca-certificates tini && apt-get clean
 COPY --from=cargo-build /src/target/release/alerter /usr/local/bin/alerter
 COPY --from=cargo-build /src/target/release/autopilot /usr/local/bin/autopilot
 COPY --from=cargo-build /src/target/release/driver /usr/local/bin/driver
