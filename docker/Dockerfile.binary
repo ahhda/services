@@ -1,22 +1,27 @@
 # syntax=docker/dockerfile:1.4
 FROM rust:1.61.0 as cargo-build
-WORKDIR /src/
+WORKDIR /root
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    cargo install cargo-strip
 
 # Copy and Build Code
 COPY . .
-RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/root/target cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/root/target \
+    cargo build --release && \
+    cargo strip
 
 # Extract Binary
 FROM docker.io/debian:bullseye-slim
 
 # Handle signal handlers properly
-COPY --from=cargo-build /src/target/release/alerter /usr/local/bin/alerter
-COPY --from=cargo-build /src/target/release/autopilot /usr/local/bin/autopilot
-COPY --from=cargo-build /src/target/release/driver /usr/local/bin/driver
-COPY --from=cargo-build /src/target/release/orderbook /usr/local/bin/orderbook
-COPY --from=cargo-build /src/target/release/refunder /usr/local/bin/refunder
-COPY --from=cargo-build /src/target/release/solver /usr/local/bin/solver
-COPY --from=cargo-build /src/target/release/solvers /usr/local/bin/solvers
+COPY --from=cargo-build /root/target/release/alerter /usr/local/bin/alerter
+COPY --from=cargo-build /root/target/release/autopilot /usr/local/bin/autopilot
+COPY --from=cargo-build /root/target/release/driver /usr/local/bin/driver
+COPY --from=cargo-build /root/target/release/orderbook /usr/local/bin/orderbook
+COPY --from=cargo-build /root/target/release/refunder /usr/local/bin/refunder
+COPY --from=cargo-build /root/target/release/solver /usr/local/bin/solver
+COPY --from=cargo-build /root/target/release/solvers /usr/local/bin/solvers
 
 CMD echo "Specify binary..."
 ENTRYPOINT ["/usr/bin/tini", "--"]
