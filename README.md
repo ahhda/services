@@ -2,7 +2,7 @@
 
 # Cow Protocol Services
 
-TEST6
+TEST7
 
 This repository contains backend code for [Cow Protocol Services](https://docs.cow.fi/) written in Rust.
 
