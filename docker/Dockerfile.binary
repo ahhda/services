@@ -4,7 +4,7 @@ WORKDIR /src/
 
 # Copy and Build Code
 COPY . .
-RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/target cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/root/target cargo build --release
 
 # Extract Binary
 FROM docker.io/debian:bullseye-slim
