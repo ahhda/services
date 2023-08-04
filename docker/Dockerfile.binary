@@ -2,9 +2,6 @@
 FROM docker.io/rust:1-slim-bullseye as cargo-build
 WORKDIR /src/
 
-# Install dependencies
-RUN apt-get update && apt-get install -y git libssl-dev pkg-config
-
 # Copy and Build Code
 COPY . .
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/root/target CARGO_PROFILE_RELEASE_DEBUG=1 cargo build --release
