@@ -15,6 +15,9 @@ RUN cargo build --release
 
 FROM debian:bullseye-slim AS runtime
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y ca-certificates tini && apt-get clean
+
 COPY --from=builder /app/target/release/alerter /usr/local/bin/alerter
 COPY --from=builder /app/target/release/autopilot /usr/local/bin/autopilot
 COPY --from=builder /app/target/release/driver /usr/local/bin/driver
